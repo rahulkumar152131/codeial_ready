@@ -97,10 +97,10 @@ module.exports.create = async function(req, res) {
     if(!user){
         User.create(req.body, function(err, user){
             if(err){
-                console.log('error cradting user while signing up');
+                console.log('error crating user while signing up');
                 return;
             }
-            return res.redirect('/users/sing-in')
+            return res.redirect('/users/sign-in')
         })
 
     }else{
@@ -160,7 +160,7 @@ module.exports.createSession = async function (req, res) {
 
 
 
-module.exports.signOut = function(req, res){
+module.exports.destroySession = function(req, res){
     req.logout(function (err) {
         if (err) {
           return next(err);

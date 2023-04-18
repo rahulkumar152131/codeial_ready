@@ -1,3 +1,9 @@
 body{
-    background-color: rgb(28, 148, 188);
+    /* background-color: rgb(28, 148, 188); */
+    text-align: center;
+}
+
+#feed-posts{
+    min-height: 100vh;
+
 }

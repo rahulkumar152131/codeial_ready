@@ -1,0 +1,19 @@
+
+
+footer{
+    height: 70px;
+    background-color: grey;
+    position: sticky;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    bottom: 0;
+    color: white;
+}
+p{
+    margin-left: 50px;
+}
+
+footer ul{
+ list-style: none;
+}

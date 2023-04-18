@@ -1,3 +1,12 @@
 body{
-    background-color: cyan;
+    /* background-color: cyan; */
+    
+}
+
+#profile-container{
+    height: 75vh;
+}
+
+footer{
+    position: fixed !important;
 }
