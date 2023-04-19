@@ -31,13 +31,13 @@ header ul li{
 }
 
 /* unvisited link */
-a:link {
+#header-layout a:link {
     color: white;
     text-decoration: none;
   }
   
   /* visited link */
-  a:visited {
+  #header-layout a:visited {
     color: white;
   }
   
