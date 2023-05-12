@@ -1,0 +1,12 @@
+<link rel="stylesheet" href="<%= assetPath('css/signIn.css') %>" />
+<% if(!locals.user){ %>
+<form action="/forgot/set-password" method="POST">
+    <input type="hidden" name="token" value="<%= token %>">
+    <input type="password" name="password" placeholder="New Password" required>
+    <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+    <input type="submit" value="Forgot Password" id="btn">
+</form>
+<% }else{ %>
+
+    <h1>Your link has been expired </h1>
+    <% } %>

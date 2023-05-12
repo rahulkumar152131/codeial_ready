@@ -1,7 +1,9 @@
 const { response } = require("express");
 const User = require("../models/user");
-
-module.exports.profile = function (req, res) {
+const fs = require("fs");
+const path = require("path");
+const Friendship = require('../models/friendship');
+module.exports.profile = async function (req, res) {
 	// return res.render('user_profile', {
 	//     title:'Home',
 	// });
@@ -39,29 +41,104 @@ module.exports.profile = function (req, res) {
 	// //   } else {
 	// //     return res.redirect('/users/sign-in');
 	// //   }
-	User.findById(req.params.id, function (err, user) {
-		return res.render("user_profile", {
-			title: "User Profile",
-			profile_user: user,
+
+
+	// try {
+	// 	let user = await User.findById(req.params.id);
+	// 	// console.log(user);
+	// 	return res.render("user_profile", {
+	// 		title: "User Profile",
+	// 		profile_user: user,
+	// 	});
+	// } catch (err) {
+	// 	console.log('error in getting profile', err);
+	// 	return;
+	// }
+
+
+	try {
+		let profile_user = await User.findById(req.params.id);
+		let sourceToDestination = await Friendship.findOne({
+		  from_user: req.user._id,
+		  to_user: req.params.id,
 		});
-	});
+		let destinationToSource = await Friendship.findOne({
+		  from_user: req.params.id,
+		  to_user: req.user._id,
+		});
+		let displayText;
+		if (sourceToDestination || destinationToSource) {
+		  displayText = "Remove Friend";
+		} else {
+		  displayText = "Add Friend";
+		}
+		return res.render("./user_profile", {
+		  title: "User Profile",
+		  profile_user: profile_user,
+		  displayText: displayText,
+		});
+	  } catch (error) {
+		console.log("Error in finding the profile");
+	  }
 };
 
-module.exports.update = function (req, res) {
-	if (req.user.id == req.params.id) {
-		User.findByIdAndUpdate(req.params.id, req.body, function (err, user) {
-			if (err) {
-				console.log("Error in updating the detail", err);
-			}
-			return res.redirect("back");
-		});
-	} else {
-		return res.status(401).send("Unauthorised");
+module.exports.update = async function (req, res) {
+	// try{
+	// 	console.log(req.user.id == req.params.id);
+	//     if (req.user.id == req.params.id) {
+	//         console.log(    await User.findByIdAndUpdate(req.params.id, req.body));
+	//             return res.redirect("back");
+
+	//     } else {
+	//         return res.status(401).send("Unauthorised");
+	//     }
+	// }
+	// catch(err){
+	//     console.log('error', err);
+
+	// }
+
+	try {
+		if (req.user.id == req.params.id) {
+			let user = await User.findById(req.params.id);
+			// console.log(user);
+			User.uploadedAvater(req, res, async function (err) {
+				if (err) {
+					console.log("****Multer Error", err);
+					return;
+				}
+				user.name = req.body.name;
+				let email = await User.findOne({ email: req.body.email });
+				if(!email){
+					user.email = req.body.email;
+				}
+				user.password = req.body.password;
+				if (req.file) {
+					if (user.avatar) {
+						if(fs.existsSync(path.join(__dirname, "..", user.avatar))){
+							fs.unlinkSync(path.join(__dirname, "..", user.avatar));
+						}
+						
+					}
+
+					//this is saving the path of the uploaded file into the avatar file in the user
+
+					user.avatar = User.avatarPath + "/" + req.file.filename;
+				}
+				user.save();
+				return res.redirect("back");
+			});
+		} else {
+			return res.status(401).send("Unauthorised");
+		}
+	} catch (err) {
+		console.log("error in updating ", err);
+		return;
 	}
 };
 
 // render the sing up page
-module.exports.singUp = function (req, res) {
+module.exports.signUp = function (req, res) {
 	if (req.isAuthenticated()) {
 		return res.redirect("/users/profile");
 	}
@@ -72,9 +149,13 @@ module.exports.singUp = function (req, res) {
 };
 
 // render the sing in page
-module.exports.singIn = function (req, res) {
+module.exports.signIn = async function (req, res) {
 	if (req.isAuthenticated()) {
-		return res.redirect("/users/profile");
+		let user = await User.findById(req.user._id);
+		return res.render("user_profile", {
+			title: "User Profile",
+			profile_user: user,
+		});
 	}
 
 	return res.render("user_sign_in", {
@@ -100,23 +181,19 @@ module.exports.create = async function (req, res) {
 	//     return res.redirect('back');
 	//    }
 
-	User.findOne({ email: req.body.email }, function (err, user) {
-		if (err) {
-			console.log("error in finding user in sign up");
-			return;
-		}
+	try {
+		let user = await User.findOne({ email: req.body.email });
+
 		if (!user) {
-			User.create(req.body, function (err, user) {
-				if (err) {
-					console.log("error crating user while signing up");
-					return;
-				}
-				return res.redirect("/users/sign-in");
-			});
+			await User.create(req.body);
+
+			return res.redirect("/users/sign-in");
 		} else {
 			return res.redirect("back");
 		}
-	});
+	} catch (err) {
+		console.log('error in create',err);
+	}
 };
 
 module.exports.createSession = async function (req, res) {
@@ -159,6 +236,7 @@ module.exports.createSession = async function (req, res) {
 	//     return res.redirect("back");
 	//   }
 	// });
+	req.flash("success", "Logged in Successfully");
 	return res.redirect("/");
 };
 
@@ -167,9 +245,11 @@ module.exports.destroySession = function (req, res) {
 		if (err) {
 			return next(err);
 		}
-
+		req.flash("success", "Logged out Successfully");
 		res.redirect("/");
 	});
 };
 
 //handle user not found
+
+
