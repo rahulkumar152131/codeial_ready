@@ -16,7 +16,7 @@ class ChatEngine{
         let self = this;
 
         this.socket.on('connect', function(){
-            console.log('connection established using sockets...!');
+            console.log('connection established using sockets this is socket...!');
 
 
             self.socket.emit('join_room', {
