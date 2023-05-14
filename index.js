@@ -14,7 +14,7 @@ const customMware = require('./config/middleware');
 
 app.use(express.urlencoded());
 
-app.use(cookieParser({extender: flase}));
+app.use(cookieParser({extender: false}));
 const db = require('./config/mongoose');
 // import db from './config/mongoose';
 //use for session cookies
