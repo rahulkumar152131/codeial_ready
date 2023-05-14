@@ -13,8 +13,9 @@ const flash = require('connect-flash');
 const customMware = require('./config/middleware');
 
 app.use(express.urlencoded({extender: false}));
+const secret = 'your-secret-string';
 
-app.use(cookieParser());
+app.use(cookieParser(secret));
 const db = require('./config/mongoose');
 // import db from './config/mongoose';
 //use for session cookies
