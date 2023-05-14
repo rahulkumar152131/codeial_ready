@@ -1,19 +1,19 @@
-const mongoose = require("mongoose");
-const env = require('./environment');
-mongoose.set("strictQuery", true);
-mongoose.connect(`mongodb://0.0.0.0:27017/${env.db}`);
+const mongoose = require('mongoose');
+
+mongoose.set('strictQuery', true);
+
+const env = require('./environment')
+
+mongoose.connect(`mongodb://127.0.0.1/${env.db}`);
 
 const db = mongoose.connection;
 
-db.on(
-	"error",
-	console.error.bind(console, "Error connection to database MangoDB")
-);
+db.on('error', console.error.bind(console, "Error connecting to MongoDB"));
 
-db.once("open", function () {
-	console.log("Connected to Database :: MongoDB");
+
+db.once('open', function () {
+    console.log('Connected to Database :: MongoDB');
 });
 
+
 module.exports = db;
-// export default db;
-// export {db};

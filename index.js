@@ -2,11 +2,8 @@ const express = require('express');
 const env = require('./config/environment');
 const logger = require('morgan');
 
-
-
 const cookieParser = require('cookie-parser');
 const app = express();
-
 
 require('./config/view-helpers')(app);
 
@@ -26,16 +23,15 @@ const passport = require('passport');
 const passportLocal = require('./config/passport-local-strategy');
 const passportJWT = require('./config/passport-jwt-strategy')
 const passportGoogle = require('./config/passport-google-auth2-strategy')
-const MongoStore = require('connect-mongo');
+// const MongoStore = require('connect-mongo');
+var MongoDBStore = require('connect-mongodb-session')(session);
 const environment = require('./config/environment');
-
 
 // setup the chat server to be used with socket.io
 const chatServer = require('http').Server(app);
 const chatSockets = require('./config/chat_socket').chatSockets(chatServer);
 chatServer.listen(5000);
 console.log('chat server is listening on port 5000');
-
 
 // const sassMiddleware = require('node-sass-middleware');
 
@@ -72,21 +68,24 @@ app.set('views', './views')
 
 //mongo store is used to store the session cookie in the db
 
+var store = new MongoDBStore({
+    uri: 'mongodb://127.0.0.1:27017/codeial_development',
+    collection: 'mySessions'
+});
 
 
 app.use(session({
-    name : 'codial',
-    //TODO change the secret before deployment in producion mode
+    name: 'codeial',
+    // TODO change the secret before deployment in production mode
     secret: env.session_cookie_key,
     saveUninitialized: false,
     resave: false,
     cookie: {
-        maxAge: (1000*60*100)
-    }, 
-    store:MongoStore.create({
-        mongoUrl:`mongodb://127.0.0.1:27017/${env.db}`,
-        autoRemove: 'disabled'
-    }) 
+        maxAge: (1000 * 60 * 100)
+    },
+    store: store,
+    resave: true,
+    saveUninitialized: true
 }));
 
 app.use(passport.initialize());
