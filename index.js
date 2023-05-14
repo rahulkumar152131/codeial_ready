@@ -12,9 +12,9 @@ const expressLayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
 const customMware = require('./config/middleware');
 
-app.use(express.urlencoded());
+app.use(express.urlencoded({extender: false}));
 
-app.use(cookieParser({extender: false}));
+app.use(cookieParser());
 const db = require('./config/mongoose');
 // import db from './config/mongoose';
 //use for session cookies
