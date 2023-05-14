@@ -12,7 +12,7 @@ const expressLayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
 const customMware = require('./config/middleware');
 
-app.use(express.urlencoded({extender: false}));
+app.use(express.urlencoded({extended: false}));
 const secret = 'your-secret-string';
 
 app.use(cookieParser(secret));
