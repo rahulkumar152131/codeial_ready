@@ -1,20 +1,20 @@
 
-module.exports.chatSockets = function(socketServer){
+module.exports.chatSockets = function (socketServer) {
     const io = require('socket.io')(socketServer, {
         cors: {
-          origin: '*',
+            origin: '*',
         }
-      });
+    });
 
-    io.sockets.on('connection', function(socket){
+    io.sockets.on('connection', function (socket) {
         console.log('new connection received', socket.id);
 
-        socket.on('disconnect', function(){
+        socket.on('disconnect', function () {
             console.log('socket disconnected!');
         });
 
-        
-        socket.on('join_room', function(data){
+
+        socket.on('join_room', function (data) {
             console.log('joining request rec.', data);
 
             socket.join(data.chatroom);
@@ -23,7 +23,7 @@ module.exports.chatSockets = function(socketServer){
         });
 
         // CHANGE :: detect send_message and broadcast to everyone in the room
-        socket.on('send_message', function(data){
+        socket.on('send_message', function (data) {
             io.in(data.chatroom).emit('receive_message', data);
         });
 

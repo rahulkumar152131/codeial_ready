@@ -1,19 +1,58 @@
+// const mongoose = require("mongoose");
+// const env = require('./environment');
+// mongoose.set("strictQuery", true);
+// mongoose.connect('mongodb://127.0.0.1:27017/codeial123');
+
+// const db = mongoose.connection;
+
+// db.on(
+//     "error",
+//     console.error.bind(console, "Error connection to database MangoDB")
+// );
+
+// db.once("open", function () {
+//     console.log("Connected to Database :: MongoDB");
+// });
+
+// module.exports = db;
+// // export default db;
+// // export {db};
+
 const mongoose = require('mongoose');
-
-mongoose.set('strictQuery', true);
-
-const env = require('./environment')
-
-mongoose.connect(`mongodb://127.0.0.1/${env.db}`);
-
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, "Error connecting to MongoDB"));
-
-
-db.once('open', function () {
-    console.log('Connected to Database :: MongoDB');
-});
+async function ConnectingToDB() {
+  try {
+    await mongoose.connect('mongodb+srv://rk152531:8591@codeial-cluster.8em6elr.mongodb.net/Codeial', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('Connected to DB');
+  } catch (error) {
+    console.log("Error connecting to DB:", error);
+  }
+}
+ConnectingToDB();
 
 
-module.exports = db;
+// const { MongoClient, ServerApiVersion } = require('mongodb');
+// const uri = "mongodb+srv://rk152531:8591@codeial-cluster.8em6elr.mongodb.net/?retryWrites=true&w=majority";
+// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   }
+// });
+// async function run() {
+//   try {
+//     // Connect the client to the server	(optional starting in v4.7)
+//     await client.connect();
+//     // Send a ping to confirm a successful connection
+//     await client.db("admin").command({ ping: 1 });
+//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+//   } finally {
+//     // Ensures that the client will close when you finish/error
+//     await client.close();
+//   }
+// }
+// run().catch(console.dir);

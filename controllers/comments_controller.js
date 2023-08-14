@@ -2,7 +2,7 @@ const Comment = require('../models/comment');
 const Post = require('../models/post');
 const commentMailer = require('../mailers/comments_mailer');
 const Like = require('../models/like')
-const queue = require('../config/kue');
+// const queue = require('../config/kue');
 const commentEmailWorker = require('../workers/comment_email_worker');
 
 
@@ -23,14 +23,14 @@ module.exports.create = async function(req, res){
 
             comment = await comment.populate('user');
             // console.log(comment);
-            // commentMailer.newComment(comment);
-            let job = queue.create('emails', comment).save(function(err){
-                if(err){
-                    console.log('error in craeating a queue', err);
-                    return;
-                }
-                console.log('job enqueued', job.id);
-            });
+            commentMailer.newComment(comment);
+            // let job = queue.create('emails', comment).save(function(err){
+            //     if(err){
+            //         console.log('error in craeating a queue', err);
+            //         return;
+            //     }
+            //     console.log('job enqueued', job.id);
+            // });
             if (req.xhr){
                 // Similar for comments to fetch the user's id!
             
